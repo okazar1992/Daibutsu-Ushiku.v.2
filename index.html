@@ -185,13 +185,13 @@
                 if (correctAnswers === 10) {
                     clearInterval(timerInterval);
                     alert("10問連続正解！タイム: " + Math.floor((Date.now() - startTime) / 1000) + "秒");
-                    initializeQuiz();  // スコアをリセットして再スタート
+                    showStartButton();  // スタートボタンを再度表示
                 } else {
                     loadNextQuestion();  // 次の問題に移行
                 }
             } else {
                 alert("不正解！\nQ: " + quizData[currentQuestionIndex].question + "\nA: " + quizData[currentQuestionIndex].answer + "\n最初からやり直し！");
-                initializeQuiz();  // スコアをリセットして再スタート
+                showStartButton();  // スタートボタンを再度表示
             }
         }
 
@@ -203,6 +203,15 @@
             initializeQuiz(); // クイズを初期化して開始
         });
 
+        // スタートボタンを再表示する関数
+        function showStartButton() {
+            clearInterval(timerInterval);  // タイマーを停止
+            document.getElementById("start-button").style.display = "inline-block"; // スタートボタンを再表示
+            document.getElementById("question").style.display = "none";  // 質問を非表示
+            document.getElementById("answer-options").style.display = "none";  // オプションボタンを非表示
+            document.getElementById("timer").textContent = "タイム: 0秒"; // タイマーをリセット
+            document.getElementById("score").textContent = "スコア: 0問連続正解"; // スコアをリセット
+        }
     </script>
 
 </body>
