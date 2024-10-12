@@ -27,6 +27,7 @@
         }
         .option-buttons {
             margin-top: 20px;
+            display: none;
         }
         .row {
             display: flex;
@@ -38,12 +39,17 @@
             width: 130px;
             height: 50px;
         }
+        #start-button {
+            font-size: 20px;
+            padding: 10px 20px;
+        }
     </style>
 </head>
 <body>
 
     <h1>三角比暗算あぷりv.2</h1>
-    <p id="question">Q: sin 0°</p>
+    <button id="start-button">スタート</button>
+    <p id="question" style="display:none;">Q: sin 0°</p>
     <div id="answer-options" class="option-buttons"></div>
     <p id="timer">タイム: 0秒</p>
     <p id="score">スコア: 0問連続正解</p>
@@ -189,11 +195,14 @@
             }
         }
 
-        // ページが読み込まれた時に初期化
-        window.onload = () => {
-            initializeQuiz();
-            startTimer();
-        };
+        // スタートボタンをクリックしたときの処理
+        document.getElementById("start-button").addEventListener("click", () => {
+            document.getElementById("start-button").style.display = "none"; // スタートボタンを非表示
+            document.getElementById("question").style.display = "block"; // 質問を表示
+            document.getElementById("answer-options").style.display = "block"; // オプションボタンを表示
+            initializeQuiz(); // クイズを初期化して開始
+        });
+
     </script>
 
 </body>
