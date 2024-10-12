@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三角比暗算あぷりv.2</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #answer {
+            display: none;
+            margin-top: 20px;
+            font-size: 18px;
+            color: green;
+        }
+        #timer {
+            margin-top: 20px;
+            font-size: 18px;
+            color: red;
+        }
+        #score {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        .option-buttons {
+            margin-top: 20px;
+        }
+        .row {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .row button {
+            margin: 5px;
+            width: 130px;
+            height: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>三角比暗算あぷりv.2</h1>
+    <p id="question">Q: sin 0°</p>
+    <div id="answer-options" class="option-buttons"></div>
+    <p id="timer">タイム: 0秒</p>
+    <p id="score">スコア: 0問連続正解</p>
+
+    <script>
+        const quizData = [
+            { question: "sin 0°", answer: "0" },
+            { question: "sin 30°", answer: "1/2" },
+            { question: "sin 45°", answer: "1/√2" },
+            { question: "sin 60°", answer: "√3/2" },
+            { question: "sin 90°", answer: "1" },
+            { question: "sin 120°", answer: "√3/2" },
+            { question: "sin 135°", answer: "1/√2" },
+            { question: "sin 150°", answer: "1/2" },
+            { question: "sin 180°", answer: "0" },
+            { question: "sin 210°", answer: "-1/2" },
+            { question: "sin 225°", answer: "-1/√2" },
+            { question: "sin 240°", answer: "-√3/2" },
+            { question: "sin 270°", answer: "-1" },
+            { question: "sin 300°", answer: "-√3/2" },
+            { question: "sin 315°", answer: "-1/√2" },
+            { question: "sin 330°", answer: "-1/2" },
+            { question: "sin 360°", answer: "0" }, 
+            { question: "cos 0°", answer: "1" },
+            { question: "cos 30°", answer: "√3/2" },
+            { question: "cos 45°", answer: "1/√2" },
+            { question: "cos 60°", answer: "1/2" },
+            { question: "cos 90°", answer: "0" },
+            { question: "cos 120°", answer: "-1/2" },
+            { question: "cos 135°", answer: "-1/√2" },
+            { question: "cos 150°", answer: "-√3/2" },
+            { question: "cos 180°", answer: "-1" },
+            { question: "cos 210°", answer: "-√3/2" },
+            { question: "cos 225°", answer: "-1/√2" },
+            { question: "cos 240°", answer: "-1/2" },
+            { question: "cos 270°", answer: "0" },
+            { question: "cos 300°", answer: "1/2" },
+            { question: "cos 315°", answer: "1/√2" },
+            { question: "cos 330°", answer: "√3/2" },
+            { question: "cos 360°", answer: "1" }, 
+            { question: "tan 0°", answer: "0" },
+            { question: "tan 30°", answer: "1/√3" },
+            { question: "tan 45°", answer: "1" },
+            { question: "tan 60°", answer: "√3" },
+            { question: "tan 90°", answer: "ないよ～(``0で割る問題''発生！)" },
+            { question: "tan 120°", answer: "-√3" },
+            { question: "tan 135°", answer: "-1" },
+            { question: "tan 150°", answer: "-1/√3" },
+            { question: "tan 180°", answer: "0" },
+            { question: "tan 210°", answer: "1/√3" },
+            { question: "tan 225°", answer: "1" },
+            { question: "tan 240°", answer: "√3" },
+            { question: "tan 270°", answer: "ないよ～(``0で割る問題''発生！)" },
+            { question: "tan 300°", answer: "-√3" },
+            { question: "tan 315°", answer: "-1" },
+            { question: "tan 330°", answer: "-1/√3" },
+            { question: "tan 360°", answer: "0" }
+        ];
+
+        const options = [
+            "√3", "1", "√3/2", "1/√2", "1/√3", "1/2", "0", 
+            "-√3", "-1", "-√3/2", "-1/√2", "-1/√3", "-1/2", "ないよ～(``0で割る問題''発生！)"
+        ];
+
+        let currentQuestionIndex = 0;
+        let correctAnswers = 0;
+        let startTime, timerInterval;
+
+        // タイマーをスタートする
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsedTime = Math.floor((Date.now() - startTime) / 1000);
+                document.getElementById("timer").textContent = "タイム: " + elapsedTime + "秒";
+            }, 1000);
+        }
+
+        // タイマーをリセットする
+        function resetTimer() {
+            clearInterval(timerInterval);
+            document.getElementById("timer").textContent = "タイム: 0秒";
+            startTimer();
+        }
+
+        // スコアと問題を初期化
+        function initializeQuiz() {
+            correctAnswers = 0;
+            loadNextQuestion();
+            document.getElementById("score").textContent = "スコア: " + correctAnswers + "問連続正解";
+            resetTimer();  // タイマーをリセットして再スタート
+        }
+
+        // 次の問題をロード
+        function loadNextQuestion() {
+            currentQuestionIndex = Math.floor(Math.random() * quizData.length);
+            document.getElementById("question").textContent = "Q: " + quizData[currentQuestionIndex].question;
+            loadOptions();
+        }
+
+        // 回答のオプションボタンを表示
+        function loadOptions() {
+            const optionsContainer = document.getElementById("answer-options");
+            optionsContainer.innerHTML = "";  // 前のボタンをクリア
+
+            const row1 = document.createElement("div");
+            row1.classList.add("row");
+            const row2 = document.createElement("div");
+            row2.classList.add("row");
+
+            options.slice(0, 7).forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                row1.appendChild(button);
+            });
+
+            options.slice(7).forEach(option => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => checkAnswer(option);
+                row2.appendChild(button);
+            });
+
+            optionsContainer.appendChild(row1);
+            optionsContainer.appendChild(row2);
+        }
+
+        // 回答の判定
+        function checkAnswer(selectedOption) {
+            if (selectedOption === quizData[currentQuestionIndex].answer) {
+                correctAnswers++;
+                document.getElementById("score").textContent = "スコア: " + correctAnswers + "問連続正解";
+                if (correctAnswers === 10) {
+                    clearInterval(timerInterval);
+                    alert("10問連続正解！タイム: " + Math.floor((Date.now() - startTime) / 1000) + "秒");
+                    initializeQuiz();  // スコアをリセットして再スタート
+                } else {
+                    loadNextQuestion();  // 次の問題に移行
+                }
+            } else {
+                alert("不正解！\nQ: " + quizData[currentQuestionIndex].question + "\nA: " + quizData[currentQuestionIndex].answer + "\n最初からやり直し！");
+                initializeQuiz();  // スコアをリセットして再スタート
+            }
+        }
+
+        // ページが読み込まれた時に初期化
+        window.onload = () => {
+            initializeQuiz();
+            startTimer();
+        };
+    </script>
+
+</body>
+</html>
